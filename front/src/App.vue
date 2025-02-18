@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import Header from '@/components/common/Header.vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth-store'
 
 const authStore = useAuthStore()
 

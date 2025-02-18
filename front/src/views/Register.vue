@@ -33,16 +33,6 @@
               placeholder="비밀번호를 다시 입력하세요"
             >
           </div>
-          <div class="form-group">
-            <label for="name">이름</label>
-            <input 
-              type="text" 
-              id="name"
-              v-model="name"
-              required
-              placeholder="이름을 입력하세요"
-            >
-          </div>
           <div v-if="error" class="error-message">
             {{ error }}
           </div>
@@ -60,10 +50,10 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/auth'
-  import { authApi } from '@/api/authApi'
+  import { useAuthStore } from '@/stores/auth-store'
+  import { authApi } from '@/api/auth-api'
   
   const router = useRouter()
   const authStore = useAuthStore()
@@ -71,7 +61,6 @@
   const email = ref('')
   const password = ref('')
   const passwordConfirm = ref('')
-  const name = ref('')
   const error = ref('')
   const isLoading = ref(false)
   
@@ -91,15 +80,14 @@
     try {
       await authApi.register({
         email: email.value,
-        password: password.value,
-        name: name.value
+        password: password.value
       })
       
       // 회원가입 성공 후 로그인 페이지로 이동
       router.push('/login')
     } catch (err: any) {
       console.error('회원가입 실패:', err)
-      error.value = err.response?.data?.message || '회원가입 중 오류가 발생했습니다.'
+      error.value = err.message || '회원가입 중 오류가 발생했습니다.'
     } finally {
       isLoading.value = false
     }

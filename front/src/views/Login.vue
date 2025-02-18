@@ -8,7 +8,7 @@
             <input 
               type="email" 
               id="email"
-              v-model="email"
+              v-model="loginForm.email"
               required
               placeholder="이메일을 입력하세요"
             >
@@ -18,7 +18,7 @@
             <input 
               type="password" 
               id="password"
-              v-model="password"
+              v-model="loginForm.password"
               required
               placeholder="비밀번호를 입력하세요"
             >
@@ -42,13 +42,15 @@
   <script setup lang="ts">
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/auth'
-  
+  import { useAuthStore } from '@/stores/auth-store'
+  import { authApi } from '@/api/auth-api'
   const router = useRouter()
   const authStore = useAuthStore()
   
-  const email = ref('')
-  const password = ref('')
+  const loginForm = ref({
+    email: '',
+    password: ''
+  })
   const error = ref('')
   const isLoading = ref(false)
   
@@ -59,15 +61,25 @@
     isLoading.value = true
     
     try {
-      const success = await authStore.login(email.value, password.value)
-      if (success) {
-        router.push('/')
-      } else {
-        error.value = '이메일 또는 비밀번호가 올바르지 않습니다.'
-      }
-    } catch (err: any) {
-      console.error('로그인 실패:', err)
-      error.value = err.response?.data?.message || '로그인 중 오류가 발생했습니다.'
+      const response = await authApi.login(loginForm.value)
+      console.log('로그인 응답:', response)
+      
+      // response.data에서 토큰 가져오기
+      const token = response.data.access_token
+      console.log('토큰:', token)  // 토큰 값 확인
+      
+      // 토큰 저장
+      localStorage.setItem('token', token)
+      
+      // 스토어 상태 업데이트
+      authStore.isAuthenticated = true
+      
+      console.log('저장된 토큰:', localStorage.getItem('token'))  // 저장 확인용 로그
+      
+      router.push('/mypage')
+    } catch (error: any) {
+      console.error('로그인 에러:', error)
+      alert(error.message || '로그인에 실패했습니다.')
     } finally {
       isLoading.value = false
     }

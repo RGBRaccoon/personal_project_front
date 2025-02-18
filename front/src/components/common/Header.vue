@@ -32,6 +32,7 @@
           {{ authStore.user?.name }}
         </button>
         <div v-if="isMenuOpen" class="dropdown-menu">
+          <router-link to="/mypage">마이페이지</router-link>
           <router-link to="/my-lectures">내 강의실</router-link>
           <router-link to="/profile">프로필 설정</router-link>
           <button @click="handleLogout">로그아웃</button>
@@ -42,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth-store'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -69,6 +70,24 @@ const handleLogout = () => {
   authStore.logout()
   router.push('/')
 }
+
+// 드롭다운 메뉴 외부 클릭시 닫기
+const closeMenu = (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  if (!target.closest('.profile-menu')) {
+    isMenuOpen.value = false
+  }
+}
+
+// 컴포넌트 마운트시 이벤트 리스너 추가
+onMounted(() => {
+  document.addEventListener('click', closeMenu)
+})
+
+// 컴포넌트 언마운트시 이벤트 리스너 제거
+onUnmounted(() => {
+  document.removeEventListener('click', closeMenu)
+})
 </script>
 
 <style scoped>
@@ -182,5 +201,14 @@ const handleLogout = () => {
   font-size: 0.9rem;
   background-color: transparent;
   text-align: left;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-menu a {
+  white-space: nowrap;  /* 텍스트 줄바꿈 방지 */
 }
 </style>
