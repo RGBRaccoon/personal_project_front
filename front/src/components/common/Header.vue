@@ -28,9 +28,13 @@
       
       <!-- 로그인 상태 -->
       <div v-else class="profile-menu">
-        <button class="profile-btn" @click="isMenuOpen = !isMenuOpen">
-          {{ authStore.user?.name }}
-        </button>
+        <div class="profile-btn" @click="isMenuOpen = !isMenuOpen">
+          <img 
+            :src="profileImage" 
+            alt="프로필" 
+            class="profile-image"
+          />
+        </div>
         <div v-if="isMenuOpen" class="dropdown-menu">
           <router-link to="/mypage">마이페이지</router-link>
           <router-link to="/my-lectures">내 강의실</router-link>
@@ -43,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -87,6 +91,10 @@ onMounted(() => {
 // 컴포넌트 언마운트시 이벤트 리스너 제거
 onUnmounted(() => {
   document.removeEventListener('click', closeMenu)
+})
+
+const profileImage = computed(() => {
+  return authStore.user?.profile_image || '/images/default_profile_image.png'
 })
 </script>
 
@@ -166,49 +174,45 @@ onUnmounted(() => {
 }
 
 .profile-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  padding: 4px;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: white;
+  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 0.5rem 0;
+  min-width: 150px;
+  z-index: 1000;
 }
 
-.dropdown-menu a {
-  display: block;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: #333;
-}
-
+.dropdown-menu a,
 .dropdown-menu button {
   display: block;
-  width: 100%;
   padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  background-color: transparent;
+  width: 100%;
   text-align: left;
+  background: none;
+  border: none;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .dropdown-menu a:hover,
 .dropdown-menu button:hover {
   background-color: #f5f5f5;
-}
-
-.dropdown-menu a {
-  white-space: nowrap;  /* 텍스트 줄바꿈 방지 */
 }
 </style>

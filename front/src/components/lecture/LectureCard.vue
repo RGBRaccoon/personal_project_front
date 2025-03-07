@@ -24,8 +24,8 @@
   </template>
   
   <script setup lang="ts">
-  import type { Lecture } from '@/types/lecture'
-  import { LectureTypeLabel } from '@/types/lecture'
+  import type { Lecture } from '@/types/lecture-type'
+  import { LectureTypeLabel } from '@/types/lecture-type'
   
   defineProps<{
     lecture: Lecture

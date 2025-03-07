@@ -25,6 +25,14 @@
           </div>
           <div v-if="error" class="error-message">
             {{ error }}
+            <button 
+              v-if="showResendButton" 
+              @click="handleResendVerification"
+              class="resend-button"
+              :disabled="isResending"
+            >
+              {{ isResending ? '전송 중...' : '인증 메일 재전송' }}
+            </button>
           </div>
           <div class="form-actions">
             <button type="submit" class="login-button" :disabled="isLoading">
@@ -35,6 +43,14 @@
             <router-link to="/register">계정이 없으신가요? 회원가입</router-link>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- 알림 모달 -->
+    <div v-if="showNotification" class="notification-modal">
+      <div class="notification-content">
+        <p>{{ notificationMessage }}</p>
+        <button @click="closeNotification" class="close-button">확인</button>
       </div>
     </div>
   </template>
@@ -53,36 +69,70 @@
   })
   const error = ref('')
   const isLoading = ref(false)
+  const showResendButton = ref(false)
+  const isResending = ref(false)
+  const showNotification = ref(false)
+  const notificationMessage = ref('')
   
   const handleLogin = async () => {
     if (isLoading.value) return
     
     error.value = ''
     isLoading.value = true
+    showResendButton.value = false
     
     try {
+      localStorage.removeItem('token')
       const response = await authApi.login(loginForm.value)
-      console.log('로그인 응답:', response)
       
-      // response.data에서 토큰 가져오기
       const token = response.data.access_token
-      console.log('토큰:', token)  // 토큰 값 확인
+      if (!token) {
+        throw new Error('토큰이 없습니다.')
+      }
       
-      // 토큰 저장
       localStorage.setItem('token', token)
-      
-      // 스토어 상태 업데이트
       authStore.isAuthenticated = true
-      
-      console.log('저장된 토큰:', localStorage.getItem('token'))  // 저장 확인용 로그
-      
       router.push('/mypage')
-    } catch (error: any) {
-      console.error('로그인 에러:', error)
-      alert(error.message || '로그인에 실패했습니다.')
+    } catch (err: any) {
+      console.error('로그인 에러:', err)
+      
+      console.log('에러 상태 코드:', err.response?.status)
+      console.log('에러 데이터:', err.response?.data)
+      
+      if (err.response && err.response.status === 403) {
+        error.value = '이메일 인증이 필요합니다.'
+        showResendButton.value = true
+        showNotification.value = true
+        notificationMessage.value = '이메일 인증이 필요합니다. 인증 메일을 재전송하시겠습니까?'
+      } else {
+        error.value = err.response?.data?.message || err.message || '로그인에 실패했습니다.'
+      }
     } finally {
       isLoading.value = false
     }
+  }
+
+  const handleResendVerification = async () => {
+    if (isResending.value) return
+    
+    isResending.value = true
+    try {
+      await authApi.resendVerification(loginForm.value.email)
+      notificationMessage.value = '인증 메일이 재전송되었습니다. 이메일을 확인해주세요.'
+      showNotification.value = true
+      showResendButton.value = false
+    } catch (err: any) {
+      console.error('인증 메일 재전송 에러:', err)
+      notificationMessage.value = '인증 메일 재전송에 실패했습니다.'
+      showNotification.value = true
+    } finally {
+      isResending.value = false
+    }
+  }
+
+  const closeNotification = () => {
+    showNotification.value = false
+    notificationMessage.value = ''
   }
   </script>
   
@@ -176,5 +226,59 @@
   .login-button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+  }
+  
+  .resend-button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .resend-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .resend-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .notification-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .notification-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .close-button {
+    margin-top: 1rem;
+    padding: 0.5rem 2rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .close-button:hover {
+    background-color: #45a049;
   }
   </style>

@@ -52,9 +52,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Lecture } from '@/types/lecture'
+import type { Lecture } from '@/types/lecture-type'
 import LectureCard from './LectureCard.vue'
-import { lectureApi } from '@/api/Lecture-api'
+import { lectureApi } from '@/api/lecture-api'
 
 const router = useRouter()
 const lectures = ref<Lecture[]>([])

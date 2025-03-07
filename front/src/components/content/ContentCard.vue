@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LectureContent } from '@/types/content'
+import type { LectureContent } from '@/types/content-type'
 
 defineProps<{
   content: LectureContent

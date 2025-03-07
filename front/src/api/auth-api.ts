@@ -1,23 +1,6 @@
 import api from './axios'
+import type {User, LoginRequest, RegisterRequest, RegisterResponse } from '@/types/user-types'
 
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
-export interface RegisterRequest {
-  email: string
-  password: string
-}
-
-export interface RegisterResponse {
-  id: number;
-}
-
-interface LoginResponse {
-  access_token: string;  // 실제 응답의 토큰 필드명 확인 필요
-  // ... other fields
-}
 
 export const authApi = {
   // 로그인
@@ -96,5 +79,10 @@ export const authApi = {
 
   // 현재 사용자 정보 조회
   getCurrentUser: () => 
-    api.get('/auth/users/me')
+    api.get<User>('/auth/me'),
+
+  resendVerification: async (email: string) => {
+    const response = await api.post('/auth/request-verify-token', { email })
+    return response.data
+  }
 }
