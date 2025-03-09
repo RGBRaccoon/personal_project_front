@@ -17,9 +17,9 @@
         </div>
         
         <div class="lecture-details">
-          <p class="description">{{ lecture.description }}</p>
+          <p class="instructor">강사 : {{ lecture.instructor_id }}</p>
           <div class="meta-info">
-            <span class="instructor">강사: {{ lecture.instructor_id }}</span>
+            <span class="description">강의 설명 : {{ lecture.description }}</span>
             <span class="rating">⭐ {{ lecture.rating?.toFixed(1) || '0.0' }}</span>
           </div>
         </div>

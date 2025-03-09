@@ -116,19 +116,9 @@ const goToLectureManagement = () => {
   router.push(`/lecture/management/${lecture.value?.lecture_id}`)
 }
 
-const handleRentLecture = async () => {
-  if (!lecture.value || isRenting.value) return
-  
-  isRenting.value = true
-  try {
-    await marketApi.rentLecture(lecture.value.lecture_id)
-    router.push(`/lecture/${lecture.value.lecture_id}`)
-  } catch (err: any) {
-    console.error('강의 대여 에러:', err)
-    error.value = '강의 대여에 실패했습니다.'
-  } finally {
-    isRenting.value = false
-  }
+const handleRentLecture = () => {
+  if (!lecture.value) return
+  router.push(`/market/payment/${lecture.value.lecture_id}`)
 }
 
 onMounted(() => {

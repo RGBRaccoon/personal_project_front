@@ -15,7 +15,13 @@
           v-model="searchQuery"
           @keyup.enter="handleSearch"
         >
-        <button class="search-button" @click="handleSearch">검색</button>
+        <button 
+          class="search-button" 
+          @click="handleSearch"
+          :disabled="isSearching"
+        >
+          {{ isSearching ? '검색중...' : '검색' }}
+        </button>
       </div>
     </div>
 
@@ -55,10 +61,29 @@ const router = useRouter()
 const authStore = useAuthStore()
 const searchQuery = ref('')
 const isMenuOpen = ref(false)
+const isSearching = ref(false)
 
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push(`/search?q=${searchQuery.value}`)
+const handleSearch = async () => {
+  if (isSearching.value) return
+  
+  isSearching.value = true
+  try {
+    // 검색어가 비어있으면 기본 마켓 페이지로 이동
+    if (!searchQuery.value.trim()) {
+      await router.push('/market')
+    } else {
+      // 검색어가 있으면 검색 결과 페이지로 이동
+      await router.push({
+        path: '/market',
+        query: { 
+          keyword: searchQuery.value.trim()
+        }
+      })
+    }
+  } catch (err) {
+    console.error('검색 처리 중 오류:', err)
+  } finally {
+    isSearching.value = false
   }
 }
 
@@ -214,5 +239,10 @@ const profileImage = computed(() => {
 .dropdown-menu a:hover,
 .dropdown-menu button:hover {
   background-color: #f5f5f5;
+}
+
+.search-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>

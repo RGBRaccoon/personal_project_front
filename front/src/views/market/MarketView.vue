@@ -71,40 +71,16 @@ const totalPages = ref(1)
 const lectureType = ref('all')
 const keyword = ref('')
 
-// URL에서 파라미터 가져오기
-const initializeFromUrl = () => {
-  const type = (route.params.lecture_type as string) || 'all'
-  const page = Number(route.params.page) || 1
-  const searchKeyword = (route.params.keyword as string) || ''
-
-  lectureType.value = type
-  currentPage.value = page
-  keyword.value = searchKeyword
-
-  fetchLectures(type, page, searchKeyword)
-}
-
-const fetchPageInfo = async (type: string, searchKeyword: string = '') => {
-  try {
-    const response = await marketApi.getMarketLecturePageCount(type, searchKeyword)
-    totalPages.value = response
-  } catch (err: any) {
-    console.error('페이지 정보 조회 에러:', err)
-  }
-}
-
 const fetchLectures = async (type: string, page: number, searchKeyword: string = '') => {
   isLoading.value = true
   try {
-    const response = await marketApi.getMarketLectures(type, page, searchKeyword)
+    const response = await marketApi.getMarketLectures(
+      type, 
+      page, 
+      searchKeyword.trim()
+    )
     lectures.value = response.items
     currentPage.value = page
-    
-    // URL 업데이트
-    const newPath = searchKeyword 
-      ? `/market/${type}/${page}/${searchKeyword}`
-      : `/market/${type}/${page}`
-    router.push(newPath)
   } catch (err: any) {
     console.error('강의 목록 조회 에러:', err)
     error.value = '강의 목록을 불러오는데 실패했습니다.'
@@ -124,23 +100,22 @@ const goToLectureDetail = (lectureId: string) => {
   router.push(`/market_detail/${lectureId}`)
 }
 
-const formatPrice = (price: number) => {
-  return price.toLocaleString()
-}
-
-// URL 변경 감지
+// 검색어 변경 감지
 watch(
-  () => route.params,
-  () => {
-    initializeFromUrl()
+  () => route.query.keyword,
+  (newKeyword) => {
+    const searchKeyword = (newKeyword as string || '').trim()
+    keyword.value = searchKeyword
+    // 검색어 유무와 관계없이 fetchLectures 호출
+    // 내부적으로 빈 검색어는 기본 목록 요청으로 처리됨
+    fetchLectures(lectureType.value, 1, searchKeyword)
   }
 )
 
-onMounted(async () => {
-  const type = (route.params.lecture_type as string) || 'all'
-  const searchKeyword = (route.params.keyword as string) || ''
-  await fetchPageInfo(type, searchKeyword)
-  initializeFromUrl()
+onMounted(() => {
+  const searchKeyword = (route.query.keyword as string || '').trim()
+  keyword.value = searchKeyword
+  fetchLectures(lectureType.value, currentPage.value, searchKeyword)
 })
 </script>
 
@@ -172,6 +147,63 @@ onMounted(async () => {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
   margin-bottom: 2rem;
+}
+
+.lecture-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.lecture-card:hover {
+  transform: translateY(-4px);
+}
+
+.lecture-image {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.lecture-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lecture-info {
+  padding: 1.5rem;
+}
+
+.lecture-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.instructor {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4CAF50;
 }
 
 .pagination {

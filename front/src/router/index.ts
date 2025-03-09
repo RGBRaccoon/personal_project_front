@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import authRoutes from './modules/auth'
 import lectureRoutes from './modules/lectures'
 import MarketView from '@/views/market/MarketView.vue'
+import PaymentView from '@/views/market/PaymentView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,19 @@ const router = createRouter({
       name: 'market-detail',
       component: () => import('@/views/market/MarketDetailView.vue')  
     },
+    {
+      path: '/market',
+      children: [
+        {
+          path: 'payment/:lecture_id',
+          name: 'payment',
+          component: PaymentView,
+          meta: {
+            requiresAuth: true
+          }
+        }
+      ]
+    }
   ]
 })
 
