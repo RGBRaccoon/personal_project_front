@@ -1,5 +1,5 @@
 import api from './axios'
-import type {User, LoginRequest, RegisterRequest, RegisterResponse } from '@/types/user-types'
+import type {User, LoginRequest, RegisterRequest, RegisterResponse, ResetPasswordRequest, RequestPasswordResetRequest} from '@/types/user-types'
 
 
 export const authApi = {
@@ -83,6 +83,16 @@ export const authApi = {
 
   resendVerification: async (email: string) => {
     const response = await api.post('/auth/request-verify-token', { email })
+    return response.data
+  },
+  // cors 에러발생중 400 오류 해결필요
+  resetPassword: async (data: ResetPasswordRequest) => {
+    const response = await api.post('/auth/reset-password', data)
+    return response.data
+  },
+
+  requestPasswordReset: async (data: RequestPasswordResetRequest) => {
+    const response = await api.post('/auth/forgot-password', data)
     return response.data
   }
 }

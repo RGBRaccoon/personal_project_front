@@ -19,3 +19,13 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   id: number;
 }
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface RequestPasswordResetRequest {
+  email: string;
+}
+

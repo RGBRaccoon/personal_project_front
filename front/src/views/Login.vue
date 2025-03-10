@@ -42,6 +42,11 @@
           <div class="form-footer">
             <router-link to="/register">계정이 없으신가요? 회원가입</router-link>
           </div>
+          <div class="additional-links">
+            <router-link to="/forgot-password" class="forgot-password-link">
+              비밀번호를 잊으셨나요?
+            </router-link>
+          </div>
         </form>
       </div>
     </div>
@@ -280,5 +285,20 @@
   
   .close-button:hover {
     background-color: #45a049;
+  }
+  
+  .additional-links {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .forgot-password-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .forgot-password-link:hover {
+    text-decoration: underline;
   }
   </style>
