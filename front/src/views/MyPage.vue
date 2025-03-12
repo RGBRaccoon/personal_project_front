@@ -8,6 +8,19 @@
         </div>
       </div>
   
+      <!-- 메뉴 섹션 추가 -->
+      <div class="menu-section">
+        <router-link to="/payment/history" class="menu-item">
+          <div class="menu-text">
+            <h3>결제 내역</h3>
+            <p>강의 구매 내역을 확인합니다</p>
+          </div>
+          <div class="menu-arrow">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </router-link>
+      </div>
+  
       <!-- 강의 섹션들 -->
       <div class="lectures-container">
         <!-- 내가 등록한 강의 -->
@@ -72,5 +85,41 @@
     margin-top: 0;
     margin-bottom: 1.5rem;
     color: #333;
+  }
+  
+  .menu-section {
+    margin-top: 2rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.2s;
+  }
+  
+  .menu-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .menu-text h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .menu-text p {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .menu-arrow {
+    color: #999;
   }
   </style>

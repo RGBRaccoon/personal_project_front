@@ -47,6 +47,16 @@ const router = createRouter({
       path: '/forgot-password',
       name: 'ForgotPassword',
       component: () => import('@/views/auth/ForgotPasswordView.vue')
+    },
+    {
+      path: '/payment/history',
+      name: 'PaymentHistory',
+      component: () => import('@/views/market/PaymentHistoryView.vue')
+    },
+    {
+      path: '/payment/detail/:payment_id',
+      name: 'PaymentDetail',
+      component: () => import('@/views/market/PaymentDetailView.vue')
     }
   ]
 })

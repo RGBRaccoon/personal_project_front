@@ -47,17 +47,22 @@ export const marketApi = {
   },
 
   getPaymentHistory: async (page: number = 1, payment_status: PaymentStatus, payment_type: PaymentType) => {
-    let request = `/market/payment/history/${page}`
+    let request = `/market/payment/history?page=${page}`
     if (payment_status !== undefined && payment_type !== undefined) {
-      request = request + `?payment_status=${payment_status}&payment_type=${payment_type}`
+      request = request + `&payment_status=${payment_status}&payment_type=${payment_type}`
     }
     if (payment_status !== undefined) {
-      request = request + `?payment_status=${payment_status}`
+      request = request + `&payment_status=${payment_status}`
     }
     if (payment_type !== undefined) {
-      request = request + `?payment_type=${payment_type}`
+      request = request + `&payment_type=${payment_type}`
     }
     const response = await api.get(request)
+    return response.data
+  },
+
+  getPaymentDetail: async (payment_id: string) => {
+    const response = await api.get(`/market/payment/payment_detail/${payment_id}`)
     return response.data
   }
 
